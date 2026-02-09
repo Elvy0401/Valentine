@@ -56,7 +56,7 @@ button {
   justify-content: center;
 }
 
-/* Taille fixe pour les boutons */
+/* Taille fixe */
 #yesBtn, #noBtn {
   width: 120px;
   height: 50px;
@@ -124,30 +124,42 @@ button {
 
 <div class="overlay" id="overlay">
   <div class="modal">
-    <p>You are persistent...😼 Destiny says <strong>YES</strong>.</p>
+    <p>😼 Destiny says <strong>YES</strong>.</p>
     <button id="closeModal">Okay 😅</button>
   </div>
 </div>
 
 <script>
 const noBtn = document.getElementById('noBtn');
+const yesBtn = document.getElementById('yesBtn');
 const container = document.querySelector('.buttons');
 const overlay = document.getElementById('overlay');
 const closeModal = document.getElementById('closeModal');
 
 let escapeCount = 0;
-const maxEscapes = 10;
-const MIN_DISTANCE = 120; // distance minimale entre positions
+const maxEscapes = 5;
+const MIN_DISTANCE = 120;
 let lastX = null;
 let lastY = null;
+
+function isCollision(x, y) {
+  const yesRect = yesBtn.getBoundingClientRect();
+  const noWidth = noBtn.offsetWidth;
+  const noHeight = noBtn.offsetHeight;
+
+  return !(
+    x + noWidth < yesRect.left - container.getBoundingClientRect().left ||
+    x > yesRect.right - container.getBoundingClientRect().left ||
+    y + noHeight < yesRect.top - container.getBoundingClientRect().top ||
+    y > yesRect.bottom - container.getBoundingClientRect().top
+  );
+}
 
 noBtn.addEventListener('mouseenter', () => {
   const btnWidth = noBtn.offsetWidth;
   const btnHeight = noBtn.offsetHeight;
-
   const rect = container.getBoundingClientRect();
 
-  // Surface ≈ 2x container
   const minX = -rect.width / 2;
   const maxX = rect.width * 1.5 - btnWidth;
   const minY = -rect.height / 2;
@@ -164,7 +176,9 @@ noBtn.addEventListener('mouseenter', () => {
     const dx = newX - lastX;
     const dy = newY - lastY;
     distance = Math.hypot(dx, dy);
-  } while (distance < MIN_DISTANCE);
+
+    // on boucle tant que trop proche de YES ou trop proche de la position précédente
+  } while (distance < MIN_DISTANCE || isCollision(newX, newY));
 
   noBtn.style.left = `${newX}px`;
   noBtn.style.top = `${newY}px`;
@@ -173,9 +187,7 @@ noBtn.addEventListener('mouseenter', () => {
   lastY = newY;
 
   escapeCount++;
-  if (escapeCount >= maxEscapes) {
-    overlay.style.display = 'flex';
-  }
+  if (escapeCount >= maxEscapes) overlay.style.display = 'flex';
 });
 
 closeModal.addEventListener('click', () => {
