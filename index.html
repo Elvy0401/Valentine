@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Be My Valentine 💘</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ffb6c1, #ffe4e1);
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+}
+
+.container {
+  text-align: center;
+  background: rgba(255,255,255,0.9);
+  padding: 3rem;
+  border-radius: 25px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  max-width: 420px;
+  width: 90%;
+  position: relative;
+}
+
+h1 {
+  font-family: 'Pacifico', cursive;
+  font-size: 2.8rem;
+  color: #d6336c;
+  margin-bottom: 2rem;
+}
+
+.buttons {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  margin-top: 2rem;
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Taille fixe pour les boutons */
+#yesBtn, #noBtn {
+  width: 120px;
+  height: 50px;
+}
+
+#yesBtn {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ff4d6d;
+  color: white;
+}
+
+#noBtn {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #6c757d;
+  color: white;
+}
+
+/* POPUP */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 350px;
+}
+
+.modal button {
+  margin-top: 1rem;
+  background: #ff4d6d;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Would you be my Valentine? 💘</h1>
+
+  <div class="buttons">
+    <button id="yesBtn">YES ❤️</button>
+    <button id="noBtn">NO 😈</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <p>You are persistent...😼 Destiny says <strong>YES</strong>.</p>
+    <button id="closeModal">Okay 😅</button>
+  </div>
+</div>
+
+<script>
+const noBtn = document.getElementById('noBtn');
+const container = document.querySelector('.buttons');
+const overlay = document.getElementById('overlay');
+const closeModal = document.getElementById('closeModal');
+
+let escapeCount = 0;
+const maxEscapes = 10;
+const MIN_DISTANCE = 120; // distance minimale entre positions
+let lastX = null;
+let lastY = null;
+
+noBtn.addEventListener('mouseenter', () => {
+  const btnWidth = noBtn.offsetWidth;
+  const btnHeight = noBtn.offsetHeight;
+
+  const rect = container.getBoundingClientRect();
+
+  // Surface ≈ 2x container
+  const minX = -rect.width / 2;
+  const maxX = rect.width * 1.5 - btnWidth;
+  const minY = -rect.height / 2;
+  const maxY = rect.height * 1.5 - btnHeight;
+
+  let newX, newY, distance;
+
+  do {
+    newX = Math.random() * (maxX - minX) + minX;
+    newY = Math.random() * (maxY - minY) + minY;
+
+    if (lastX === null) break;
+
+    const dx = newX - lastX;
+    const dy = newY - lastY;
+    distance = Math.hypot(dx, dy);
+  } while (distance < MIN_DISTANCE);
+
+  noBtn.style.left = `${newX}px`;
+  noBtn.style.top = `${newY}px`;
+
+  lastX = newX;
+  lastY = newY;
+
+  escapeCount++;
+  if (escapeCount >= maxEscapes) {
+    overlay.style.display = 'flex';
+  }
+});
+
+closeModal.addEventListener('click', () => {
+  overlay.style.display = 'none';
+  escapeCount = 0;
+  lastX = null;
+  lastY = null;
+});
+</script>
+
+</body>
+</html>
